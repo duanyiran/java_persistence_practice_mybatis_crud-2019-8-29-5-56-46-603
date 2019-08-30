@@ -1,26 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="tws.repository.EmployeeMapper">
-    <select id="selectAll" resultType="tws.entity.Employee">
-        select * from `employee`;
-    </select>
-    <insert id="insert">
-    insert into employee values(#{employee.id},#{employee.name},#{employee.age});
-    
-    </insert>
-    
-    <select id="getOne" resultType="tws.entity.Employee">
-        select * from `employee` where employee.id = #{id};
-    </select>
-    
-<update id="updateOne">
-update `employee` set
-`name` = #{employee.name},
-`age` = #{employee.age}
-where 1 and id=#{id};
-</update>	
 
-<delete id>
-</delete>
+	<select id="selectAll" resultType="tws.entity.Employee">
+		select * from `employee`;
+		<if test="keyword!=null">
+			<bind name="pattern" value="'%'+keyword+'%'" />
+			where `name` like ${pattern}
+		</if>
+	</select>
+	<select id="selectPage" parameterType="java.lang.Integer"
+		resultType="tws.entity.Employee">
+		SELECT *
+		FROM employee
+		ORDER BY name
+		OFFSET
+		(#{page,jdbcType=INTEGER}-1)*#{pageSize,jdbcType=INTEGER} ROWS FETCH
+		NEXT
+		#{pageSize,jdbcType=INTEGER} ROWS ONLY;
+	</select>
+	<insert id="insert">
+		insert into employee
+		values(#{employee.id},#{employee.name},#{employee.age});
+	</insert>
+	<select id="getOne" resultType="tws.entity.Employee">
+		select * from `employee` where
+		employee.id=#{id};
+	</select>
+	<update id="updateOne">
+		update `employee` set
+		`name`= #{employee.name},
+		`age`=
+		#{employee.age}
+		where id=#{id};
+	</update>
+	<delete id="deleteOne">
+		delete from employee where id=#{id}
+	</delete>
 
 </mapper>
